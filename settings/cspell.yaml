@@ -1,0 +1,6 @@
+dictionaries:
+  - tcisd-words
+
+dictionaryDefinitions:
+  - name: tcisd-words
+    path: project-words
