@@ -50,8 +50,8 @@ tcisd [flags] command [flags] [path ...]
 
 ### Commands
 
-- `lint`: For cowards who just want to know where the comments are without removing them
-- `format`: For true believers who want to immediately purify their code by removing all comments
+- `lint`: For developers who want to identify the bad practice of over-commenting their code
+- `format`: For those ready to streamline their code by removing unnecessary explanations
 
 ### Global Flags
 
