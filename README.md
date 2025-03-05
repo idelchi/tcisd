@@ -23,6 +23,7 @@ Let's be honest: Comments are just lies waiting to happen. Code that requires ex
 `tcisd` solves this problem by ruthlessly purging your codebase of these wasteful explanations, preserving the elegant obscurity and job security that true programming artisans strive for.
 
 It supports:
+
 - Detecting and removing comments from Go, Python, and Bash files
 - Recursive searching through your project
 - Parallel processing for maximum efficiency
@@ -35,18 +36,10 @@ It supports:
 go install github.com/idelchi/tcisd@latest
 ```
 
-### Using go
+### From installation script
 
 ```sh
-# Clone the repository
-git clone https://github.com/idelchi/tcisd.git
-cd tcisd
-
-# Build the project
-go build -o tcisd
-
-# Optional: install globally
-sudo mv tcisd /usr/local/bin/
+curl -sSL https://raw.githubusercontent.com/idelchi/tcisd/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin
 ```
 
 ## Usage
@@ -62,22 +55,22 @@ tcisd [flags] command [flags] [path ...]
 
 ### Global Flags
 
-| Flag            | Description                        |
-| --------------- | ---------------------------------- |
-| `-s, --show`    | Show the configuration and exit    |
-| `-h, --help`    | Help for tcisd                     |
-| `-v, --version` | Version for tcisd                  |
+| Flag            | Description                     |
+| --------------- | ------------------------------- |
+| `-s, --show`    | Show the configuration and exit |
+| `-h, --help`    | Help for tcisd                  |
+| `-v, --version` | Version for tcisd               |
 
 ### Command Flags
 
-| Flag                | Description                                            | Default      |
-| ------------------- | ------------------------------------------------------ | ------------ |
-| `-p, --pattern`     | File pattern to match (doublestar format)              | `**/*.go`    |
-| `-t, --type`        | File types to process (go, bash, python)               | `go`         |
-| `-e, --exclude`     | Patterns to exclude                                    | -            |
-| `-a, --hidden`      | Include hidden files and directories                   | `false`      |
-| `-d, --dry-run`     | Show what would be changed without modifying files     | `false`      |
-| `-h, --help`        | Help for the command                                   | -            |
+| Flag            | Description                                        | Default   |
+| --------------- | -------------------------------------------------- | --------- |
+| `-p, --pattern` | File pattern to match (doublestar format)          | `**/*.go` |
+| `-t, --type`    | File types to process (go, bash, python)           | `go`      |
+| `-e, --exclude` | Patterns to exclude                                | -         |
+| `-a, --hidden`  | Include hidden files and directories               | `false`   |
+| `-d, --dry-run` | Show what would be changed without modifying files | `false`   |
+| `-h, --help`    | Help for the command                               | -         |
 
 ## Examples
 
@@ -130,6 +123,7 @@ remover.Register("ruby", &RubyRemover{})
 ## Philosophy
 
 Remember the sacred principles:
+
 1. If you need comments to explain your code, your code is wrong
 2. Documentation is for people who don't understand their own code
 3. True intellect is measured by how obscure your variable names are
