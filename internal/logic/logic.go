@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -8,10 +9,10 @@ import (
 
 	"github.com/fatih/color"
 
+	"github.com/idelchi/gogen/pkg/cobraext"
 	"github.com/idelchi/tcisd/internal/commands"
 	"github.com/idelchi/tcisd/internal/config"
 	"github.com/idelchi/tcisd/internal/processor"
-	"github.com/idelchi/tcisd/pkg/cobraext"
 )
 
 // Run is the main function of the application.

@@ -12,8 +12,8 @@ import (
 	"github.com/natefinch/atomic"
 
 	"github.com/idelchi/tcisd/internal/config"
-	"github.com/idelchi/tcisd/pkg/matcher"
 	"github.com/idelchi/tcisd/pkg/remover"
+	"github.com/idelchi/wslint/pkg/matcher"
 )
 
 // Processor handles the processing of files.
@@ -34,10 +34,10 @@ type Processor struct {
 // New creates a new processor.
 func New(cfg *config.Config, workers int, types []string) *Processor {
 	return &Processor{
-		cfg:      cfg,
-		workers:  workers,
-		types:    types,
-		results:  make(map[string][]string),
+		cfg:     cfg,
+		workers: workers,
+		types:   types,
+		results: make(map[string][]string),
 	}
 }
 
@@ -110,7 +110,8 @@ func (p *Processor) Process() error {
 func (p *Processor) worker(id int, jobs <-chan string, results chan<- struct {
 	file   string
 	issues []string
-}, wg *sync.WaitGroup) {
+}, wg *sync.WaitGroup,
+) {
 	defer wg.Done()
 
 	for file := range jobs {

@@ -3,8 +3,8 @@ package commands
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/idelchi/gogen/pkg/cobraext"
 	"github.com/idelchi/tcisd/internal/config"
-	"github.com/idelchi/tcisd/pkg/cobraext"
 )
 
 // NewRootCommand creates the root command with common configuration.
