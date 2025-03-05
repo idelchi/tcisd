@@ -37,8 +37,5 @@ func NewLintCommand(cfg *config.Config) *cobra.Command {
 	cmd.Flags().StringArrayP("exclude", "e", nil, "Patterns to exclude")
 	cmd.Flags().BoolP("hidden", "a", false, "Include hidden files and directories")
 
-	// Bind flags to config
-	cobraext.MustBindPFlags(cmd, cfg)
-
 	return cmd
 }

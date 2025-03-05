@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"strings"
 	"sync"
 	"time"
@@ -107,7 +108,7 @@ func (p *Processor) Process() error {
 }
 
 // worker processes files.
-func (p *Processor) worker(id int, jobs <-chan string, results chan<- struct {
+func (p *Processor) worker(_ int, jobs <-chan string, results chan<- struct {
 	file   string
 	issues []string
 }, wg *sync.WaitGroup,
@@ -187,14 +188,14 @@ func (p *Processor) Summary() bool {
 
 // detectFileType determines the file type based on extension.
 func detectFileType(file string) string {
-	ext := strings.ToLower(strings.TrimPrefix(strings.LastIndex(file, "."), "."))
+	ext := path.Ext(file)
 
 	switch ext {
-	case "go":
+	case ".go":
 		return "go"
-	case "sh", "bash":
+	case ".sh", "bash":
 		return "bash"
-	case "py", "python":
+	case ".py", "python":
 		return "python"
 	default:
 		return ext

@@ -52,7 +52,7 @@ func (c Config) Display() bool {
 
 // Validate performs configuration validation.
 // It returns a wrapped ErrUsage if any validation rules are violated.
-func (c Config) Validate() error {
+func (c Config) Validate(config any) error {
 	if len(c.Patterns) == 0 {
 		return fmt.Errorf("%w: at least one pattern must be provided", ErrUsage)
 	}

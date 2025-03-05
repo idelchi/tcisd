@@ -38,8 +38,5 @@ func NewFormatCommand(cfg *config.Config) *cobra.Command {
 	cmd.Flags().BoolP("hidden", "a", false, "Include hidden files and directories")
 	cmd.Flags().BoolP("dry-run", "d", false, "Show what would be changed without modifying files")
 
-	// Bind flags to config
-	cobraext.MustBindPFlags(cmd, cfg)
-
 	return cmd
 }
