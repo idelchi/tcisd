@@ -24,7 +24,7 @@ Let's be honest: Comments are just lies waiting to happen. Code that requires ex
 
 It supports:
 
-- Detecting and removing comments from Go, Python, and Bash files
+- Detecting and removing comments from Go, and Python
 - Recursive searching through your project
 - Parallel processing for maximum efficiency
 
@@ -66,7 +66,7 @@ tcisd [flags] command [flags] [path ...]
 | Flag            | Description                                        | Default   |
 | --------------- | -------------------------------------------------- | --------- |
 | `-p, --pattern` | File pattern to match (doublestar format)          | `**/*.go` |
-| `-t, --type`    | File types to process (go, bash, python)           | `go`      |
+| `-t, --type`    | File types to process (go,python)                  | `go`      |
 | `-e, --exclude` | Patterns to exclude                                | -         |
 | `-a, --hidden`  | Include hidden files and directories               | `false`   |
 | `-d, --dry-run` | Show what would be changed without modifying files | `false`   |
@@ -81,14 +81,11 @@ tcisd lint --pattern="**/*.go" .
 # Purge Python comments from a specific directory
 tcisd format --type="python" --pattern="**/*.py" src/
 
-# Check for Bash comments while excluding test scripts
-tcisd lint --type="bash" --pattern="**/*.sh" --exclude="**/test/*.sh" .
-
 # Perform a dry run to see what comments would be removed
 tcisd format --dry-run --pattern="**/*.go" .
 
 # Process all supported file types in a project
-tcisd format --type="go" --type="python" --type="bash" .
+tcisd format --type="go" --type="python" .
 ```
 
 ## Default Exclusion Patterns

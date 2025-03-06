@@ -10,7 +10,6 @@ type Remover interface {
 // registry of removers by file type
 var registry = map[string]Remover{
 	"go":     &GoRemover{},
-	"bash":   &BashRemover{},
 	"python": &PythonRemover{},
 }
 

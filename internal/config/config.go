@@ -64,7 +64,6 @@ func (c Config) Validate(config any) error {
 	// Validate file types
 	validTypes := map[string]bool{
 		"go":     true,
-		"bash":   true,
 		"python": true,
 	}
 

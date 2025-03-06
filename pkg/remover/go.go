@@ -2,7 +2,6 @@ package remover
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 )
 
@@ -19,9 +18,6 @@ func (r *GoRemover) Process(lines []string) ([]string, []string) {
 	// Handle multi-line comments
 	inMultiLineComment := false
 	multiLineStart := 0
-
-	// Regular expression for single-line comments
-	singleLineRe := regexp.MustCompile(`(^|[^:])//.*$`)
 
 	// Process each line
 	for i, line := range result {
@@ -66,11 +62,10 @@ func (r *GoRemover) Process(lines []string) ([]string, []string) {
 				multiLineStart = i
 			}
 		} else {
-			// Handle single-line comments
-			if singleLineRe.MatchString(line) {
-				beforeComment := singleLineRe.ReplaceAllString(line, "$1")
-				result[i] = strings.TrimSpace(beforeComment)
-
+			// Handle single-line comments - ONLY those that START with // (after trimming whitespace)
+			trimmed := strings.TrimSpace(line)
+			if strings.HasPrefix(trimmed, "//") {
+				result[i] = ""
 				issues = append(issues, fmt.Sprintf("Single-line comment on line %d", i+1))
 			}
 		}

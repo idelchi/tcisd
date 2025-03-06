@@ -2,7 +2,6 @@ package remover
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 )
 
@@ -20,9 +19,6 @@ func (r *PythonRemover) Process(lines []string) ([]string, []string) {
 	inMultiLineDocstring := false
 	docstringStart := 0
 	docstringType := ""
-
-	// Regular expression for single-line comments
-	singleLineRe := regexp.MustCompile(`(^|[^"'])#.*$`)
 
 	// Process each line
 	for i, line := range result {
@@ -44,6 +40,14 @@ func (r *PythonRemover) Process(lines []string) ([]string, []string) {
 				// Still in docstring
 				result[i] = ""
 			}
+			continue
+		}
+
+		// Handle lines that start with # (after trimming whitespace)
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "#") {
+			result[i] = ""
+			issues = append(issues, fmt.Sprintf("Single-line comment on line %d", i+1))
 			continue
 		}
 
@@ -70,32 +74,24 @@ func (r *PythonRemover) Process(lines []string) ([]string, []string) {
 		} else if strings.Contains(line, "'''") && !inMultiLineDocstring {
 			startIndex := strings.Index(line, "'''")
 
-            // Check if there's also an end on the same line
-            if strings.Count(line, "'''") >= 2 {
-                // Both start and end on the same line
-                endIndex := startIndex + 3 + strings.Index(line[startIndex+3:], "'''") + 3
-                beforeComment := line[:startIndex]
-                afterComment := line[endIndex:]
-                result[i] = strings.TrimSpace(beforeComment + afterComment)
+			// Check if there's also an end on the same line
+			if strings.Count(line, "'''") >= 2 {
+				// Both start and end on the same line
+				endIndex := startIndex + 3 + strings.Index(line[startIndex+3:], "'''") + 3
+				beforeComment := line[:startIndex]
+				afterComment := line[endIndex:]
+				result[i] = strings.TrimSpace(beforeComment + afterComment)
 
-                issues = append(issues, fmt.Sprintf("Docstring on line %d", i+1))
-            } else {
-                // Start of docstring
-                result[i] = strings.TrimSpace(line[:startIndex])
-                inMultiLineDocstring = true
-                docstringStart = i
-                docstringType = "'''"
-            }
-        } else {
-            // Handle single-line comments
-            if singleLineRe.MatchString(line) {
-                beforeComment := singleLineRe.ReplaceAllString(line, "$1")
-                result[i] = strings.TrimSpace(beforeComment)
+				issues = append(issues, fmt.Sprintf("Docstring on line %d", i+1))
+			} else {
+				// Start of docstring
+				result[i] = strings.TrimSpace(line[:startIndex])
+				inMultiLineDocstring = true
+				docstringStart = i
+				docstringType = "'''"
+			}
+		}
+	}
 
-                issues = append(issues, fmt.Sprintf("Single-line comment on line %d", i+1))
-            }
-        }
-    }
-
-    return result, issues
+	return result, issues
 }

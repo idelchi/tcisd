@@ -2,11 +2,15 @@ package commands
 
 import (
 	"fmt"
+	"log"
+	"runtime"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/gogen/pkg/cobraext"
 	"github.com/idelchi/tcisd/internal/config"
+	"github.com/idelchi/tcisd/internal/processor"
 )
 
 // NewLintCommand creates the lint subcommand.
@@ -28,12 +32,33 @@ func NewLintCommand(cfg *config.Config) *cobra.Command {
 			return cobraext.Validate(cfg, cfg)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			return nil // Processing happens in the parent logic
+			// Set up processor with appropriate number of workers
+			proc := processor.New(
+				cfg,
+				min(runtime.NumCPU(), len(cfg.Paths)),
+				cfg.Types,
+			)
+
+			// Process the files
+			if err := proc.Process(); err != nil {
+				return err
+			}
+
+			// Print summary
+			hasIssues := proc.Summary()
+
+			if hasIssues {
+				log.Println(color.RedString("Comments found in files"))
+				return fmt.Errorf("comments found")
+			}
+
+			log.Println(color.GreenString("No comments found in files"))
+			return nil
 		},
 	}
 
 	cmd.Flags().StringArrayP("pattern", "p", []string{"**/*.go"}, "File pattern to match (doublestar format)")
-	cmd.Flags().StringArrayP("type", "t", []string{"go"}, "File types to process (go, bash, python)")
+	cmd.Flags().StringArrayP("type", "t", []string{"go"}, "File types to process (go, python)")
 	cmd.Flags().StringArrayP("exclude", "e", nil, "Patterns to exclude")
 	cmd.Flags().BoolP("hidden", "a", false, "Include hidden files and directories")
 

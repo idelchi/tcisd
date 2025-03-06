@@ -193,8 +193,6 @@ func detectFileType(file string) string {
 	switch ext {
 	case ".go":
 		return "go"
-	case ".sh", "bash":
-		return "bash"
 	case ".py", "python":
 		return "python"
 	default:

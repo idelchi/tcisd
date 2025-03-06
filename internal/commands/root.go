@@ -20,5 +20,8 @@ func NewRootCommand(cfg *config.Config, version string) *cobra.Command {
 	root.Flags().BoolP("show", "s", false, "Show the configuration and exit")
 	root.AddCommand(NewLintCommand(cfg), NewFormatCommand(cfg))
 
+	// Disable auto-completion of file paths, which can be confusing with --help
+	root.CompletionOptions.DisableDefaultCmd = true
+
 	return root
 }
