@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"fmt"
+	"errors"
 	"log"
 	"runtime"
 
@@ -13,8 +13,6 @@ import (
 	"github.com/idelchi/tcisd/internal/processor"
 )
 
-// NewFormatCommand creates the format subcommand.
-// It handles stripping comments from files.
 func NewFormatCommand(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "format [flags] [path ...]",
@@ -23,7 +21,7 @@ func NewFormatCommand(cfg *config.Config) *cobra.Command {
 		Args:  cobra.ArbitraryArgs,
 		PreRunE: func(_ *cobra.Command, args []string) error {
 			if len(args) == 0 {
-				return fmt.Errorf("at least one path must be provided")
+				return errors.New("at least one path must be provided")
 			}
 
 			cfg.Paths = args
@@ -32,19 +30,16 @@ func NewFormatCommand(cfg *config.Config) *cobra.Command {
 			return cobraext.Validate(cfg, cfg)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			// Set up processor with appropriate number of workers
 			proc := processor.New(
 				cfg,
 				min(runtime.NumCPU(), len(cfg.Paths)),
 				cfg.Types,
 			)
 
-			// Process the files
 			if err := proc.Process(); err != nil {
 				return err
 			}
 
-			// Print summary
 			hasIssues := proc.Summary()
 
 			if !hasIssues {

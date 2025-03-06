@@ -1,4 +1,3 @@
-// Package parse generates and executes the command-line interface for the application.
 package parse
 
 import (
@@ -10,8 +9,6 @@ import (
 	"github.com/idelchi/tcisd/internal/config"
 )
 
-// Execute creates and configures the command-line interface.
-// It runs the root command with all subcommands and flags configured.
 func Execute(version string) error {
 	cfg := &config.Config{}
 	root := commands.NewRootCommand(cfg, version)

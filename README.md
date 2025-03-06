@@ -20,11 +20,11 @@
 
 Let's be honest: Comments are just lies waiting to happen. Code that requires explanation through comments is simply code that should be rewritten. The real 10x developers amongst us know that variable names like `x`, `temp`, and `data` are self-explanatory, and anyone who can't understand your undocumented 500-line functions simply isn't trying hard enough.
 
-`tcisd` solves this problem by ruthlessly purging your codebase of these wasteful explanations, preserving the elegant obscurity and job security that true programming artisans strive for.
+`tcisd` solves this problem by purging your codebase of these wasteful explanations, preserving the elegant obscurity and job security that true programming artisans strive for.
 
 It supports:
 
-- Detecting and removing comments from Go, and Python
+- Detecting and removing comments from Go and Python
 - Recursive searching through your project
 - Parallel processing for maximum efficiency
 
@@ -66,7 +66,7 @@ tcisd [flags] command [flags] [path ...]
 | Flag            | Description                                        | Default   |
 | --------------- | -------------------------------------------------- | --------- |
 | `-p, --pattern` | File pattern to match (doublestar format)          | `**/*.go` |
-| `-t, --type`    | File types to process (go,python)                  | `go`      |
+| `-t, --type`    | File types to process (go, python)                 | `go`      |
 | `-e, --exclude` | Patterns to exclude                                | -         |
 | `-a, --hidden`  | Include hidden files and directories               | `false`   |
 | `-d, --dry-run` | Show what would be changed without modifying files | `false`   |
