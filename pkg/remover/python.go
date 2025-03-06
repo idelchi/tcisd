@@ -51,41 +51,37 @@ func (r *PythonRemover) Process(lines []string) ([]string, []string) {
 			continue
 		}
 
-		// Check for start of triple-quoted docstrings
-		if strings.Contains(line, "\"\"\"") && !inMultiLineDocstring {
-			startIndex := strings.Index(line, "\"\"\"")
-
+		// Check for triple-quoted docstrings at the beginning of the line
+		if strings.HasPrefix(trimmed, "\"\"\"") && !inMultiLineDocstring {
 			// Check if there's also an end on the same line
 			if strings.Count(line, "\"\"\"") >= 2 {
 				// Both start and end on the same line
-				endIndex := startIndex + 3 + strings.Index(line[startIndex+3:], "\"\"\"") + 3
-				beforeComment := line[:startIndex]
-				afterComment := line[endIndex:]
-				result[i] = strings.TrimSpace(beforeComment + afterComment)
+				afterStartIndex := strings.Index(trimmed, "\"\"\"") + 3
+				endIndex := afterStartIndex + strings.Index(trimmed[afterStartIndex:], "\"\"\"") + 3
+				afterComment := trimmed[endIndex:]
+				result[i] = strings.TrimSpace(afterComment)
 
 				issues = append(issues, fmt.Sprintf("Docstring on line %d", i+1))
 			} else {
 				// Start of docstring
-				result[i] = strings.TrimSpace(line[:startIndex])
+				result[i] = ""
 				inMultiLineDocstring = true
 				docstringStart = i
 				docstringType = "\"\"\""
 			}
-		} else if strings.Contains(line, "'''") && !inMultiLineDocstring {
-			startIndex := strings.Index(line, "'''")
-
+		} else if strings.HasPrefix(trimmed, "'''") && !inMultiLineDocstring {
 			// Check if there's also an end on the same line
 			if strings.Count(line, "'''") >= 2 {
 				// Both start and end on the same line
-				endIndex := startIndex + 3 + strings.Index(line[startIndex+3:], "'''") + 3
-				beforeComment := line[:startIndex]
-				afterComment := line[endIndex:]
-				result[i] = strings.TrimSpace(beforeComment + afterComment)
+				afterStartIndex := strings.Index(trimmed, "'''") + 3
+				endIndex := afterStartIndex + strings.Index(trimmed[afterStartIndex:], "'''") + 3
+				afterComment := trimmed[endIndex:]
+				result[i] = strings.TrimSpace(afterComment)
 
 				issues = append(issues, fmt.Sprintf("Docstring on line %d", i+1))
 			} else {
 				// Start of docstring
-				result[i] = strings.TrimSpace(line[:startIndex])
+				result[i] = ""
 				inMultiLineDocstring = true
 				docstringStart = i
 				docstringType = "'''"

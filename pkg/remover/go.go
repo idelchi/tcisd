@@ -42,31 +42,30 @@ func (r *GoRemover) Process(lines []string) ([]string, []string) {
 			continue
 		}
 
-		// Check for start of multi-line comment
-		if strings.Contains(line, "/*") {
-			startIndex := strings.Index(line, "/*")
+		// Trim whitespace for checking prefixes
+		trimmed := strings.TrimSpace(line)
 
+		// Handle single-line comments - ONLY those that START with // (after trimming whitespace)
+		if strings.HasPrefix(trimmed, "//") {
+			result[i] = ""
+			issues = append(issues, fmt.Sprintf("Single-line comment on line %d", i+1))
+			continue
+		}
+
+		// Check for start of multi-line comment - ONLY at the beginning of the line
+		if strings.HasPrefix(trimmed, "/*") {
 			// Check if there's also an end of multi-line comment on the same line
-			if strings.Contains(line[startIndex:], "*/") {
-				// Both start and end on the same line
-				endIndex := startIndex + strings.Index(line[startIndex:], "*/") + 2
-				beforeComment := line[:startIndex]
-				afterComment := line[endIndex:]
-				result[i] = strings.TrimSpace(beforeComment + afterComment)
+			if strings.Contains(trimmed, "*/") {
+				endIndex := strings.Index(trimmed, "*/") + 2
+				afterComment := trimmed[endIndex:]
+				result[i] = strings.TrimSpace(afterComment)
 
 				issues = append(issues, fmt.Sprintf("Multi-line comment on line %d", i+1))
 			} else {
 				// Start of multi-line comment
-				result[i] = strings.TrimSpace(line[:startIndex])
+				result[i] = ""
 				inMultiLineComment = true
 				multiLineStart = i
-			}
-		} else {
-			// Handle single-line comments - ONLY those that START with // (after trimming whitespace)
-			trimmed := strings.TrimSpace(line)
-			if strings.HasPrefix(trimmed, "//") {
-				result[i] = ""
-				issues = append(issues, fmt.Sprintf("Single-line comment on line %d", i+1))
 			}
 		}
 	}
