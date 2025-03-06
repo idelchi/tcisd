@@ -43,11 +43,9 @@ func (c *Config) Validate(config any) error {
 		"dockerfile": true,
 	}
 
-	// If no types are provided, use all valid types
 	if len(c.Types) == 0 {
 		c.Types = []string{"go", "python", "dockerfile"}
 	} else {
-		// Validate the provided types
 		for _, t := range c.Types {
 			if !validTypes[t] {
 				return fmt.Errorf("%w: invalid file type: %s", ErrUsage, t)
@@ -55,7 +53,6 @@ func (c *Config) Validate(config any) error {
 		}
 	}
 
-	// If no patterns are provided, set default patterns based on types
 	if len(c.Patterns) == 0 {
 		for _, t := range c.Types {
 			switch t {
