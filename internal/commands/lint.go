@@ -54,8 +54,8 @@ func NewLintCommand(cfg *config.Config) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringArrayP("pattern", "p", []string{"**/*.go"}, "File pattern to match (doublestar format)")
-	cmd.Flags().StringArrayP("type", "t", []string{"go"}, "File types to process (go, python)")
+	cmd.Flags().StringArrayP("pattern", "p", nil, "File pattern to match (doublestar format)")
+	cmd.Flags().StringArrayP("type", "t", nil, "File types to process (go, python, dockerfile)")
 	cmd.Flags().StringArrayP("exclude", "e", nil, "Patterns to exclude")
 	cmd.Flags().BoolP("hidden", "a", false, "Include hidden files and directories")
 

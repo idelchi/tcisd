@@ -5,8 +5,9 @@ type Remover interface {
 }
 
 var registry = map[string]Remover{
-	"go":     &GoRemover{},
-	"python": &PythonRemover{},
+	"go":         &GoRemover{},
+	"python":     &PythonRemover{},
+	"dockerfile": &DockerfileRemover{},
 }
 
 func ForType(fileType string) Remover {

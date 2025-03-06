@@ -168,6 +168,12 @@ func (p *Processor) Summary() bool {
 }
 
 func detectFileType(file string) string {
+	// Check for Dockerfile (which doesn't have a standard extension)
+	baseName := path.Base(file)
+	if baseName == "Dockerfile" || strings.HasPrefix(baseName, "Dockerfile.") {
+		return "dockerfile"
+	}
+
 	ext := path.Ext(file)
 
 	switch ext {
