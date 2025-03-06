@@ -10,9 +10,7 @@ type PythonRemover struct{}
 
 // Process removes comments from Python code.
 func (r *PythonRemover) Process(lines []string) ([]string, []string) {
-	result := make([]string, len(lines))
-	copy(result, lines)
-
+	var result []string
 	issues := []string{}
 
 	// Handle multi-line docstrings
@@ -21,9 +19,11 @@ func (r *PythonRemover) Process(lines []string) ([]string, []string) {
 	docstringType := ""
 
 	// Process each line
-	for i, line := range result {
-		// Skip empty lines
-		if strings.TrimSpace(line) == "" {
+	for i, line := range lines {
+		// Skip empty lines but add them to result
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" {
+			result = append(result, line)
 			continue
 		}
 
@@ -32,23 +32,21 @@ func (r *PythonRemover) Process(lines []string) ([]string, []string) {
 			if strings.Contains(line, docstringType) {
 				// End of docstring found
 				endIndex := strings.Index(line, docstringType) + len(docstringType)
-				result[i] = strings.TrimSpace(line[endIndex:])
+				remaining := strings.TrimSpace(line[endIndex:])
+				if remaining != "" {
+					result = append(result, remaining)
+				}
 				inMultiLineDocstring = false
-
 				issues = append(issues, fmt.Sprintf("Docstring from line %d to %d", docstringStart+1, i+1))
-			} else {
-				// Still in docstring
-				result[i] = ""
 			}
+			// Skip this line if we're inside a docstring
 			continue
 		}
 
 		// Handle lines that start with # (after trimming whitespace)
-		trimmed := strings.TrimSpace(line)
 		if strings.HasPrefix(trimmed, "#") {
-			result[i] = ""
 			issues = append(issues, fmt.Sprintf("Single-line comment on line %d", i+1))
-			continue
+			continue // Skip the line entirely
 		}
 
 		// Check for triple-quoted docstrings at the beginning of the line
@@ -58,13 +56,13 @@ func (r *PythonRemover) Process(lines []string) ([]string, []string) {
 				// Both start and end on the same line
 				afterStartIndex := strings.Index(trimmed, "\"\"\"") + 3
 				endIndex := afterStartIndex + strings.Index(trimmed[afterStartIndex:], "\"\"\"") + 3
-				afterComment := trimmed[endIndex:]
-				result[i] = strings.TrimSpace(afterComment)
-
+				afterComment := strings.TrimSpace(trimmed[endIndex:])
+				if afterComment != "" {
+					result = append(result, afterComment)
+				}
 				issues = append(issues, fmt.Sprintf("Docstring on line %d", i+1))
 			} else {
 				// Start of docstring
-				result[i] = ""
 				inMultiLineDocstring = true
 				docstringStart = i
 				docstringType = "\"\"\""
@@ -75,17 +73,20 @@ func (r *PythonRemover) Process(lines []string) ([]string, []string) {
 				// Both start and end on the same line
 				afterStartIndex := strings.Index(trimmed, "'''") + 3
 				endIndex := afterStartIndex + strings.Index(trimmed[afterStartIndex:], "'''") + 3
-				afterComment := trimmed[endIndex:]
-				result[i] = strings.TrimSpace(afterComment)
-
+				afterComment := strings.TrimSpace(trimmed[endIndex:])
+				if afterComment != "" {
+					result = append(result, afterComment)
+				}
 				issues = append(issues, fmt.Sprintf("Docstring on line %d", i+1))
 			} else {
 				// Start of docstring
-				result[i] = ""
 				inMultiLineDocstring = true
 				docstringStart = i
 				docstringType = "'''"
 			}
+		} else {
+			// No comment, keep the line
+			result = append(result, line)
 		}
 	}
 

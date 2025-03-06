@@ -10,9 +10,7 @@ type GoRemover struct{}
 
 // Process removes comments from Go code.
 func (r *GoRemover) Process(lines []string) ([]string, []string) {
-	result := make([]string, len(lines))
-	copy(result, lines)
-
+	var result []string
 	issues := []string{}
 
 	// Handle multi-line comments
@@ -20,9 +18,11 @@ func (r *GoRemover) Process(lines []string) ([]string, []string) {
 	multiLineStart := 0
 
 	// Process each line
-	for i, line := range result {
-		// Skip empty lines
-		if strings.TrimSpace(line) == "" {
+	for i, line := range lines {
+		// Skip empty lines but add them to result
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" {
+			result = append(result, line)
 			continue
 		}
 
@@ -31,25 +31,21 @@ func (r *GoRemover) Process(lines []string) ([]string, []string) {
 			if strings.Contains(line, "*/") {
 				// End of multi-line comment found
 				endIndex := strings.Index(line, "*/") + 2
-				result[i] = strings.TrimSpace(line[endIndex:])
+				remaining := strings.TrimSpace(line[endIndex:])
+				if remaining != "" {
+					result = append(result, remaining)
+				}
 				inMultiLineComment = false
-
 				issues = append(issues, fmt.Sprintf("Multi-line comment from line %d to %d", multiLineStart+1, i+1))
-			} else {
-				// Still in multi-line comment
-				result[i] = ""
 			}
+			// Skip this line if we're inside a comment
 			continue
 		}
 
-		// Trim whitespace for checking prefixes
-		trimmed := strings.TrimSpace(line)
-
 		// Handle single-line comments - ONLY those that START with // (after trimming whitespace)
 		if strings.HasPrefix(trimmed, "//") {
-			result[i] = ""
 			issues = append(issues, fmt.Sprintf("Single-line comment on line %d", i+1))
-			continue
+			continue // Skip the line entirely
 		}
 
 		// Check for start of multi-line comment - ONLY at the beginning of the line
@@ -57,16 +53,19 @@ func (r *GoRemover) Process(lines []string) ([]string, []string) {
 			// Check if there's also an end of multi-line comment on the same line
 			if strings.Contains(trimmed, "*/") {
 				endIndex := strings.Index(trimmed, "*/") + 2
-				afterComment := trimmed[endIndex:]
-				result[i] = strings.TrimSpace(afterComment)
-
+				afterComment := strings.TrimSpace(trimmed[endIndex:])
+				if afterComment != "" {
+					result = append(result, afterComment)
+				}
 				issues = append(issues, fmt.Sprintf("Multi-line comment on line %d", i+1))
 			} else {
 				// Start of multi-line comment
-				result[i] = ""
 				inMultiLineComment = true
 				multiLineStart = i
 			}
+		} else {
+			// No comment, keep the line
+			result = append(result, line)
 		}
 	}
 
