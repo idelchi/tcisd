@@ -36,23 +36,34 @@ func (c Config) Display() bool {
 	return c.Show
 }
 
-func (c Config) Validate(config any) error {
-	if len(c.Patterns) == 0 {
-		return fmt.Errorf("%w: at least one pattern must be provided", ErrUsage)
+func (c *Config) Validate(config any) error {
+	validTypes := map[string]bool{
+		"go":         true,
+		"python":     true,
+		"dockerfile": true,
 	}
 
 	if len(c.Types) == 0 {
-		return fmt.Errorf("%w: at least one file type must be provided", ErrUsage)
+		c.Types = []string{"go", "python", "dockerfile"}
+	} else {
+		for _, t := range c.Types {
+			if !validTypes[t] {
+				return fmt.Errorf("%w: invalid file type: %s", ErrUsage, t)
+			}
+		}
 	}
 
-	validTypes := map[string]bool{
-		"go":     true,
-		"python": true,
-	}
-
-	for _, t := range c.Types {
-		if !validTypes[t] {
-			return fmt.Errorf("%w: invalid file type: %s", ErrUsage, t)
+	if len(c.Patterns) == 0 {
+		for _, t := range c.Types {
+			switch t {
+			case "go":
+				c.Patterns = append(c.Patterns, "**/*.go")
+			case "python":
+				c.Patterns = append(c.Patterns, "**/*.py")
+			case "dockerfile":
+				c.Patterns = append(c.Patterns, "**/Dockerfile")
+				c.Patterns = append(c.Patterns, "**/Dockerfile.*")
+			}
 		}
 	}
 
