@@ -24,7 +24,7 @@ Let's be honest: Comments are just lies waiting to happen. Code that requires ex
 
 It supports:
 
-- Detecting and removing comments from Go and Python
+- Detecting and removing comments from Go, Python, and Dockerfiles
 - Recursive searching through your project
 - Parallel processing for maximum efficiency
 
@@ -63,29 +63,41 @@ tcisd [flags] command [flags] [path ...]
 
 ### Command Flags
 
-| Flag            | Description                                        | Default   |
-| --------------- | -------------------------------------------------- | --------- |
-| `-p, --pattern` | File pattern to match (doublestar format)          | `**/*.go` |
-| `-t, --type`    | File types to process (go, python)                 | `go`      |
-| `-e, --exclude` | Patterns to exclude                                | -         |
-| `-a, --hidden`  | Include hidden files and directories               | `false`   |
-| `-d, --dry-run` | Show what would be changed without modifying files | `false`   |
-| `-h, --help`    | Help for the command                               | -         |
+| Flag            | Description                                        | Default                                     |
+| --------------- | -------------------------------------------------- | ------------------------------------------- |
+| `-p, --pattern` | File pattern to match (doublestar format)          | Based on file types                         |
+| `-t, --type`    | File types to process (go, python, dockerfile)     | All supported types                         |
+| `-e, --exclude` | Patterns to exclude                                | -                                           |
+| `-a, --hidden`  | Include hidden files and directories               | `false`                                     |
+| `-d, --dry-run` | Show what would be changed without modifying files | `false` (only available for format command) |
+| `-h, --help`    | Help for the command                               | -                                           |
+
+## Default Behaviors
+
+- If no file types are specified, all supported types (go, python, dockerfile) are used
+- If no patterns are specified, patterns are automatically generated based on the selected file types:
+  - Go: `**/*.go`
+  - Python: `**/*.py`
+  - Dockerfile: `**/Dockerfile` and `**/Dockerfile.*`
+- At least one path must be provided for both commands
 
 ## Examples
 
 ```sh
 # Identify all the comments lurking in your Go code
-tcisd lint --pattern="**/*.go" .
+tcisd lint --type="go" .
 
 # Purge Python comments from a specific directory
-tcisd format --type="python" --pattern="**/*.py" src/
+tcisd format --type="python" src/
 
 # Perform a dry run to see what comments would be removed
-tcisd format --dry-run --pattern="**/*.go" .
+tcisd format --dry-run .
 
-# Process all supported file types in a project
-tcisd format --type="go" --type="python" .
+# Process only Dockerfiles in a project
+tcisd format --type="dockerfile" .
+
+# Process specific file types with custom patterns
+tcisd lint --type="go" --pattern="**/cmd/*.go" --pattern="**/internal/*.go" .
 ```
 
 ## Default Exclusion Patterns
