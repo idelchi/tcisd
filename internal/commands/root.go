@@ -1,21 +1,93 @@
 package commands
 
 import (
-	"github.com/spf13/cobra"
+	"errors"
+	"fmt"
+	"log"
+	"runtime"
 
+	"github.com/fatih/color"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
+	"github.com/idelchi/godyl/pkg/pretty"
 	"github.com/idelchi/gogen/pkg/cobraext"
 	"github.com/idelchi/tcisd/internal/config"
+	"github.com/idelchi/tcisd/internal/processor"
 )
 
 func NewRootCommand(cfg *config.Config, version string) *cobra.Command {
-	root := cobraext.NewDefaultRootCommand(version)
+	root := &cobra.Command{
+		Use:              "tcisd [flags] command [flags]",
+		Short:            "Strip comments from code files",
+		Long:             "tcisd is a tool for stripping comments from code files.\nIt can verify if files have comments (lint mode) or remove them (format mode).",
+		Version:          version,
+		SilenceUsage:     true,
+		SilenceErrors:    true,
+		TraverseChildren: true,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := viper.BindPFlags(cmd.Root().Flags()); err != nil {
+				return fmt.Errorf("binding flags: %w", err)
+			}
 
-	root.Use = "tcisd [flags] command [flags]"
-	root.Short = "Strip comments from code files"
-	root.Long = "tcisd is a tool for stripping comments from code files.\n" +
-		"It can verify if files have comments (lint mode) or remove them (format mode)."
+			if err := viper.Unmarshal(cfg); err != nil {
+				return fmt.Errorf("unmarshalling config for %q: %w", cmd.Name(), err)
+			}
+
+			cfg.Paths = args
+
+			switch cmd.Name() {
+			case "lint":
+				cfg.Mode = config.LintMode
+			case "format":
+				cfg.Mode = config.FormatMode
+			}
+
+			if cfg.Show {
+				pretty.PrintYAML(cfg)
+
+				return nil
+			}
+
+			if err := cfg.Validate(); err != nil {
+				return err
+			}
+
+			proc := processor.New(
+				cfg,
+			)
+
+			if err := proc.Process(); err != nil {
+				return err
+			}
+
+			hasIssues := proc.Summary()
+
+			if hasIssues {
+				log.Println(color.RedString("Comments found in files"))
+
+				return errors.New("comments found")
+			}
+
+			log.Println(color.GreenString("No comments found in files"))
+
+			return nil
+		},
+		RunE: cobraext.UnknownSubcommandAction,
+	}
+
+	root.CompletionOptions.DisableDefaultCmd = true
+	root.Flags().SortFlags = false
+
+	root.SetVersionTemplate("{{ .Version }}\n")
 
 	root.Flags().BoolP("show", "s", false, "Show the configuration and exit")
+	root.Flags().StringArrayP("pattern", "p", nil, "File pattern to match (doublestar format)")
+	root.Flags().StringArrayP("types", "t", []string{"go", "python", "dockerfile"}, "File types to process (go, python, dockerfile)")
+	root.Flags().StringArrayP("exclude", "e", nil, "Patterns to exclude")
+	root.Flags().BoolP("hidden", "a", false, "Include hidden files and directories")
+	root.Flags().IntP("parallel", "j", runtime.NumCPU(), "Number of concurrent jobs (default: number of CPUs)")
+
 	root.AddCommand(NewLintCommand(cfg), NewFormatCommand(cfg))
 
 	root.CompletionOptions.DisableDefaultCmd = true

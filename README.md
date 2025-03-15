@@ -2,6 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/idelchi/tcisd.svg)](https://pkg.go.dev/github.com/idelchi/tcisd)
 [![Go Report Card](https://goreportcard.com/badge/github.com/idelchi/tcisd)](https://goreportcard.com/report/github.com/idelchi/tcisd)
+[![Build Status](https://github.com/idelchi/tcisd/actions/workflows/github-actions.yml/badge.svg)](https://github.com/idelchi/tcisd/actions/workflows/github-actions.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 `tcisd` is a tool that liberates your code from the burden of documentation. Because obviously, code speaks for itself!

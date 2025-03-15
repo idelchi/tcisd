@@ -4,6 +4,7 @@ go 1.24
 
 require (
 	github.com/fatih/color v1.17.0
+	github.com/idelchi/godyl v0.0.0-20241029091045-af98851a0cee
 	github.com/idelchi/gogen v0.1.0-beta.0.20250114054957-4978468f4054
 	github.com/idelchi/wslint v0.1.0-beta.0.20250114055008-5b7492cb1219
 	github.com/natefinch/atomic v1.0.1
@@ -14,7 +15,6 @@ require (
 	github.com/bmatcuk/doublestar/v4 v4.6.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/idelchi/godyl v0.0.0-20241029091045-af98851a0cee // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
