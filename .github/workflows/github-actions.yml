@@ -28,7 +28,7 @@ jobs:
           check-latest: true
 
       - name: Verify that project contains no comments
-        run: go run . lint .
+        run: go run . lint
 
   cleanup:
     uses: idelchi/devenv/.github/workflows/cleanup.yml@dev
