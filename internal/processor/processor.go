@@ -20,18 +20,14 @@ import (
 
 type Processor struct {
 	cfg            *config.Config
-	workers        int
-	types          []string
 	files          []string
 	results        map[string][]string
 	processingTime time.Duration
 }
 
-func New(cfg *config.Config, workers int, types []string) *Processor {
+func New(cfg *config.Config) *Processor {
 	return &Processor{
 		cfg:     cfg,
-		workers: workers,
-		types:   types,
 		results: make(map[string][]string),
 	}
 }
@@ -67,7 +63,7 @@ func (p *Processor) Process() error {
 
 	var wg sync.WaitGroup
 
-	for i := range p.workers {
+	for i := range p.cfg.Parallel {
 		wg.Add(1)
 
 		go p.worker(i, jobs, results, &wg)
@@ -105,7 +101,7 @@ func (p *Processor) worker(_ int, jobs <-chan string, results chan<- struct {
 
 		fileType := detectFileType(file)
 
-		if !contains(p.types, fileType) {
+		if !contains(p.cfg.Types, fileType) {
 			continue
 		}
 
@@ -126,7 +122,7 @@ func (p *Processor) worker(_ int, jobs <-chan string, results chan<- struct {
 		lines := strings.Split(string(content), "\n")
 		processedLines, issues := r.Process(lines)
 
-		if p.cfg.Mode == config.FormatMode && len(issues) > 0 && !p.cfg.DryRun {
+		if p.cfg.Mode == config.FormatMode && len(issues) > 0 {
 			if err := atomic.WriteFile(file, strings.NewReader(strings.Join(processedLines, "\n"))); err != nil {
 				log.Printf("Error writing file %s: %v", file, err)
 			}
@@ -156,11 +152,7 @@ func (p *Processor) Summary() bool {
 		}
 
 		if p.cfg.Mode == config.FormatMode {
-			if p.cfg.DryRun {
-				log.Println(color.YellowString("Dry run: no files were modified"))
-			} else {
-				log.Println(color.GreenString("Files were modified successfully"))
-			}
+			log.Println(color.GreenString("Files were modified successfully"))
 		}
 	}
 

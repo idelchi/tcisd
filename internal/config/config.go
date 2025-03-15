@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"slices"
 )
 
 type Mode string
@@ -19,15 +20,15 @@ type Config struct {
 
 	Mode Mode
 
-	Patterns []string `mapstructure:"pattern"`
+	Patterns []string
 
-	Types []string `mapstructure:"type"`
+	Types []string
 
 	Exclude []string
 
 	Hidden bool
 
-	DryRun bool `mapstructure:"dry-run"`
+	Parallel int
 
 	Paths []string
 }
@@ -36,20 +37,16 @@ func (c Config) Display() bool {
 	return c.Show
 }
 
-func (c *Config) Validate(config any) error {
-	validTypes := map[string]bool{
-		"go":         true,
-		"python":     true,
-		"dockerfile": true,
+func (c *Config) Validate() error {
+	validTypes := []string{
+		"go",
+		"python",
+		"dockerfile",
 	}
 
-	if len(c.Types) == 0 {
-		c.Types = []string{"go", "python", "dockerfile"}
-	} else {
-		for _, t := range c.Types {
-			if !validTypes[t] {
-				return fmt.Errorf("%w: invalid file type: %s", ErrUsage, t)
-			}
+	for _, t := range c.Types {
+		if !slices.Contains(validTypes, t) {
+			return fmt.Errorf("%w: invalid file type: %s", ErrUsage, t)
 		}
 	}
 
@@ -67,8 +64,8 @@ func (c *Config) Validate(config any) error {
 		}
 	}
 
-	if len(c.Paths) == 0 {
-		return fmt.Errorf("%w: at least one path must be provided", ErrUsage)
+	if c.Parallel < 1 {
+		return fmt.Errorf("%w: invalid number of parallel jobs: %d", ErrUsage, c.Parallel)
 	}
 
 	return nil
