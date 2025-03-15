@@ -11,7 +11,7 @@ func NewLintCommand(cfg *config.Config) *cobra.Command {
 		Use:   "lint [flags] [path ...]",
 		Short: "Check files for comments",
 		Long:  "Check files for comments without modifying them.",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.ArbitraryArgs,
 		RunE: func(_ *cobra.Command, _ []string) error {
 			return nil
 		},

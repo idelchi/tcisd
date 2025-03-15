@@ -3,6 +3,7 @@ package processor
 import (
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path"
@@ -33,14 +34,14 @@ func New(cfg *config.Config) *Processor {
 }
 
 func (p *Processor) Process() error {
-	m := matcher.New(p.cfg.Hidden, p.cfg.Exclude, log.New(os.Stderr, "", 0))
+	logger := log.New(os.Stderr, "", 0)
+	logger.SetOutput(io.Discard)
+
+	m := matcher.New(p.cfg.Hidden, p.cfg.Exclude, logger)
 
 	for _, path := range p.cfg.Paths {
-		for _, pattern := range p.cfg.Patterns {
-			fullPattern := fmt.Sprintf("%s/%s", path, pattern)
-			if err := m.Match(fullPattern); err != nil {
-				return fmt.Errorf("matching pattern %s: %w", fullPattern, err)
-			}
+		if err := m.Match(path); err != nil {
+			return fmt.Errorf("matching pattern %s: %w", path, err)
 		}
 	}
 
@@ -97,8 +98,6 @@ func (p *Processor) worker(_ int, jobs <-chan string, results chan<- struct {
 	defer wg.Done()
 
 	for file := range jobs {
-		log.Printf("Processing file: %s", file)
-
 		fileType := detectFileType(file)
 
 		if !contains(p.cfg.Types, fileType) {
@@ -153,6 +152,8 @@ func (p *Processor) Summary() bool {
 
 		if p.cfg.Mode == config.FormatMode {
 			log.Println(color.GreenString("Files were modified successfully"))
+
+			hasIssues = false
 		}
 	}
 

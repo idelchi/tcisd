@@ -19,7 +19,7 @@ func (r *DockerfileRemover) Process(lines []string) ([]string, []string) {
 		}
 
 		if strings.HasPrefix(trimmed, "#") {
-			issues = append(issues, fmt.Sprintf("Comment on line %d", i+1))
+			issues = append(issues, fmt.Sprintf("Comment on line %d: %q", i+1, trimmed))
 			continue // Skip the line entirely
 		}
 

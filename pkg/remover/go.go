@@ -34,14 +34,14 @@ func (r *GoRemover) Process(lines []string) ([]string, []string) {
 
 				inMultiLineComment = false
 
-				issues = append(issues, fmt.Sprintf("Multi-line comment from line %d to %d", multiLineStart+1, i+1))
+				issues = append(issues, fmt.Sprintf("Multi-line comment from line %d to %d:\n\t\t%q", multiLineStart+1, i+1, line[:endIndex]))
 			}
 
 			continue
 		}
 
 		if strings.HasPrefix(trimmed, "//") {
-			issues = append(issues, fmt.Sprintf("Single-line comment on line %d", i+1))
+			issues = append(issues, fmt.Sprintf("Single-line comment on line %d: %q", i+1, trimmed))
 
 			continue // Skip the line entirely
 		}
@@ -55,7 +55,7 @@ func (r *GoRemover) Process(lines []string) ([]string, []string) {
 					result = append(result, afterComment)
 				}
 
-				issues = append(issues, fmt.Sprintf("Multi-line comment on line %d", i+1))
+				issues = append(issues, fmt.Sprintf("Multi-line comment on line %d:\n\t\t%q", i+1, trimmed[:endIndex]))
 			} else {
 				inMultiLineComment = true
 				multiLineStart = i

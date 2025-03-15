@@ -20,8 +20,6 @@ type Config struct {
 
 	Mode Mode
 
-	Patterns []string
-
 	Types []string
 
 	Exclude []string
@@ -47,20 +45,6 @@ func (c *Config) Validate() error {
 	for _, t := range c.Types {
 		if !slices.Contains(validTypes, t) {
 			return fmt.Errorf("%w: invalid file type: %s", ErrUsage, t)
-		}
-	}
-
-	if len(c.Patterns) == 0 {
-		for _, t := range c.Types {
-			switch t {
-			case "go":
-				c.Patterns = append(c.Patterns, "**/*.go")
-			case "python":
-				c.Patterns = append(c.Patterns, "**/*.py")
-			case "dockerfile":
-				c.Patterns = append(c.Patterns, "**/Dockerfile")
-				c.Patterns = append(c.Patterns, "**/Dockerfile.*")
-			}
 		}
 	}
 
