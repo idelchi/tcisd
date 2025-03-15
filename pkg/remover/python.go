@@ -35,14 +35,14 @@ func (r *PythonRemover) Process(lines []string) ([]string, []string) {
 
 				inMultiLineDocstring = false
 
-				issues = append(issues, fmt.Sprintf("Docstring from line %d to %d", docstringStart+1, i+1))
+				issues = append(issues, fmt.Sprintf("Docstring from line %d to %d:\n%q", docstringStart+1, i+1, line[:endIndex]))
 			}
 
 			continue
 		}
 
 		if strings.HasPrefix(trimmed, "#") {
-			issues = append(issues, fmt.Sprintf("Single-line comment on line %d", i+1))
+			issues = append(issues, fmt.Sprintf("Single-line comment on line %d: %q", i+1, trimmed))
 
 			continue // Skip the line entirely
 		}
@@ -57,7 +57,7 @@ func (r *PythonRemover) Process(lines []string) ([]string, []string) {
 					result = append(result, afterComment)
 				}
 
-				issues = append(issues, fmt.Sprintf("Docstring on line %d", i+1))
+				issues = append(issues, fmt.Sprintf("Docstring on line %d:\n\t\t%q", i+1, trimmed[:endIndex]))
 			} else {
 				inMultiLineDocstring = true
 				docstringStart = i
@@ -73,7 +73,7 @@ func (r *PythonRemover) Process(lines []string) ([]string, []string) {
 					result = append(result, afterComment)
 				}
 
-				issues = append(issues, fmt.Sprintf("Docstring on line %d", i+1))
+				issues = append(issues, fmt.Sprintf("Docstring on line %d:\n\t\t%q", i+1, trimmed[:endIndex]))
 			} else {
 				inMultiLineDocstring = true
 				docstringStart = i

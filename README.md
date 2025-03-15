@@ -66,7 +66,6 @@ tcisd [flags] command [flags] [path ...]
 
 | Flag             | Description                                    | Default             |
 | ---------------- | ---------------------------------------------- | ------------------- |
-| `-p, --pattern`  | File pattern to match (doublestar format)      | Based on file types |
 | `-t, --type`     | File types to process (go, python, dockerfile) | All supported types |
 | `-e, --exclude`  | Patterns to exclude                            | -                   |
 | `-a, --hidden`   | Include hidden files and directories           | `false`             |
@@ -75,28 +74,11 @@ tcisd [flags] command [flags] [path ...]
 
 ## Default Behaviors
 
-- If no file types are specified, all supported types (go, python, dockerfile) are used
-- If no patterns are specified, patterns are automatically generated based on the selected file types:
-  - Go: `**/*.go`
-  - Python: `**/*.py`
-  - Dockerfile: `**/Dockerfile` and `**/Dockerfile.*`
-- At least one path must be provided for both commands
+Default behavior is self-documented.
 
 ## Examples
 
-```sh
-# Identify all the comments lurking in your Go code
-tcisd lint --type="go" .
-
-# Purge Python comments from a specific directory
-tcisd format --type="python" src/
-
-# Process only Dockerfiles in a project
-tcisd format --type="dockerfile" .
-
-# Process specific file types with custom patterns
-tcisd lint --type="go" --pattern="**/cmd/*.go" --pattern="**/internal/*.go" .
-```
+Examples are self-documented.
 
 ## Default Exclusion Patterns
 
