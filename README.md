@@ -64,14 +64,14 @@ tcisd [flags] command [flags] [path ...]
 
 ### Command Flags
 
-| Flag            | Description                                        | Default                                     |
-| --------------- | -------------------------------------------------- | ------------------------------------------- |
-| `-p, --pattern` | File pattern to match (doublestar format)          | Based on file types                         |
-| `-t, --type`    | File types to process (go, python, dockerfile)     | All supported types                         |
-| `-e, --exclude` | Patterns to exclude                                | -                                           |
-| `-a, --hidden`  | Include hidden files and directories               | `false`                                     |
-| `-d, --dry-run` | Show what would be changed without modifying files | `false` (only available for format command) |
-| `-h, --help`    | Help for the command                               | -                                           |
+| Flag             | Description                                    | Default             |
+| ---------------- | ---------------------------------------------- | ------------------- |
+| `-p, --pattern`  | File pattern to match (doublestar format)      | Based on file types |
+| `-t, --type`     | File types to process (go, python, dockerfile) | All supported types |
+| `-e, --exclude`  | Patterns to exclude                            | -                   |
+| `-a, --hidden`   | Include hidden files and directories           | `false`             |
+| `-j, --parallel` | Number of parallel workers to use              | Number of CPUs      |
+| `-h, --help`     | Help for the command                           | -                   |
 
 ## Default Behaviors
 
@@ -90,9 +90,6 @@ tcisd lint --type="go" .
 
 # Purge Python comments from a specific directory
 tcisd format --type="python" src/
-
-# Perform a dry run to see what comments would be removed
-tcisd format --dry-run .
 
 # Process only Dockerfiles in a project
 tcisd format --type="dockerfile" .
