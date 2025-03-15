@@ -6,6 +6,7 @@ import (
 	"log"
 	"runtime"
 
+	"github.com/MakeNowJust/heredoc"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -18,9 +19,12 @@ import (
 
 func NewRootCommand(cfg *config.Config, version string) *cobra.Command {
 	root := &cobra.Command{
-		Use:              "tcisd [flags] command [flags] [pattern ...]",
-		Short:            "Strip comments from code files",
-		Long:             "tcisd is a tool for stripping comments from code files.\nIt can verify if files have comments (lint mode) or remove them (format mode).",
+		Use:   "tcisd [flags] command [flags] [pattern ...]",
+		Short: "Strip comments from code files",
+		Long: heredoc.Doc(`
+		tcisd is a tool for stripping comments from code files.
+		It can verify if files have comments (lint mode) or remove them (format mode).
+		Patterns defaults to ['**/*.go', '**/*.py', '**/Dockerfile.*'].`),
 		Version:          version,
 		SilenceUsage:     true,
 		SilenceErrors:    true,
@@ -36,7 +40,7 @@ func NewRootCommand(cfg *config.Config, version string) *cobra.Command {
 
 			cfg.Paths = args
 			if len(args) == 0 {
-				cfg.Paths = []string{"**/*.go", "**/*.py", "**/Dockerfile"}
+				cfg.Paths = []string{"**/*.go", "**/*.py", "**/Dockerfile.*"}
 			}
 
 			switch cmd.Name() {
