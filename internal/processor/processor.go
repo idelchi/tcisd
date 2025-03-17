@@ -105,16 +105,16 @@ func (p *Processor) worker(_ int, jobs <-chan string, results chan<- struct {
 			continue
 		}
 
-		content, err := os.ReadFile(file)
-		if err != nil {
-			log.Printf("Error reading file %s: %v", file, err)
+		r := remover.ForType(fileType)
+		if r == nil {
+			log.Printf("No remover found for file type %s", fileType)
 
 			continue
 		}
 
-		r := remover.ForType(fileType)
-		if r == nil {
-			log.Printf("No remover found for file type %s", fileType)
+		content, err := os.ReadFile(file)
+		if err != nil {
+			log.Printf("Error reading file %s: %v", file, err)
 
 			continue
 		}
