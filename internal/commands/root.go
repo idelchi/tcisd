@@ -40,7 +40,7 @@ func NewRootCommand(cfg *config.Config, version string) *cobra.Command {
 
 			cfg.Paths = args
 			if len(args) == 0 {
-				cfg.Paths = []string{"**/*.go", "**/*.py", "**/Dockerfile.*"}
+				cfg.Paths = []string{"**"}
 			}
 
 			switch cmd.Name() {

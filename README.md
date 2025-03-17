@@ -80,20 +80,6 @@ Default behavior is self-documented.
 
 Examples are self-documented.
 
-## Default Exclusion Patterns
-
-To avoid disasters, tcisd automatically excludes several patterns:
-
-- `**/*.exe`
-- `**/.git/**`
-- `**/node_modules/**`
-- `**/vendor/**`
-- `**/.task/**`
-- `**/.cache/**`
-- Hidden files and directories (unless explicitly included with `-a`)
-- Binary files
-- The executable itself
-
 ## Custom Comment Removers
 
 Advanced users looking to spread the joy of uncommented code to other languages can easily extend `tcisd` by implementing the `Remover` interface and registering it for their language:
