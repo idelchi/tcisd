@@ -24,7 +24,7 @@ func NewRootCommand(cfg *config.Config, version string) *cobra.Command {
 		Long: heredoc.Doc(`
 		tcisd is a tool for stripping comments from code files.
 		It can verify if files have comments (lint mode) or remove them (format mode).
-		Patterns defaults to ['**/*.go', '**/*.py', '**/Dockerfile.*'].`),
+		Patterns defaults to ['**'].`),
 		Version:          version,
 		SilenceUsage:     true,
 		SilenceErrors:    true,
