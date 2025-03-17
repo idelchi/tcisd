@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -15,8 +16,8 @@ import (
 	"github.com/natefinch/atomic"
 
 	"github.com/idelchi/tcisd/internal/config"
+	"github.com/idelchi/tcisd/pkg/matcher"
 	"github.com/idelchi/tcisd/pkg/remover"
-	"github.com/idelchi/wslint/pkg/matcher"
 )
 
 type Processor struct {
@@ -37,7 +38,7 @@ func (p *Processor) Process() error {
 	logger := log.New(os.Stderr, "", 0)
 	logger.SetOutput(io.Discard)
 
-	m := matcher.New(p.cfg.Hidden, p.cfg.Exclude, logger)
+	m := matcher.New(p.cfg.Hidden, p.cfg.Exclude)
 
 	for _, path := range p.cfg.Paths {
 		if err := m.Match(path); err != nil {
@@ -45,7 +46,7 @@ func (p *Processor) Process() error {
 		}
 	}
 
-	p.files = m.ListFiles()
+	p.files = m.List()
 
 	if len(p.files) == 0 {
 		return errors.New("no files found")
@@ -100,20 +101,20 @@ func (p *Processor) worker(_ int, jobs <-chan string, results chan<- struct {
 	for file := range jobs {
 		fileType := detectFileType(file)
 
-		if !contains(p.cfg.Types, fileType) {
-			continue
-		}
-
-		content, err := os.ReadFile(file)
-		if err != nil {
-			log.Printf("Error reading file %s: %v", file, err)
-
+		if !slices.Contains(p.cfg.Types, fileType) {
 			continue
 		}
 
 		r := remover.ForType(fileType)
 		if r == nil {
 			log.Printf("No remover found for file type %s", fileType)
+
+			continue
+		}
+
+		content, err := os.ReadFile(file)
+		if err != nil {
+			log.Printf("Error reading file %s: %v", file, err)
 
 			continue
 		}
@@ -176,14 +177,4 @@ func detectFileType(file string) string {
 	default:
 		return ext
 	}
-}
-
-func contains(slice []string, str string) bool {
-	for _, s := range slice {
-		if s == str {
-			return true
-		}
-	}
-
-	return false
 }
