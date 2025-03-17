@@ -90,7 +90,7 @@ func NewRootCommand(cfg *config.Config, version string) *cobra.Command {
 
 	root.Flags().BoolP("show", "s", false, "Show the configuration and exit")
 	root.Flags().StringArrayP("types", "t", []string{"go", "python", "dockerfile"}, "File types to process (go, python, dockerfile)")
-	root.Flags().StringArrayP("exclude", "e", nil, "Patterns to exclude")
+	root.Flags().StringArrayP("exclude", "e", []string{"**/.git/**"}, "Patterns to exclude")
 	root.Flags().BoolP("hidden", "a", false, "Include hidden files and directories")
 	root.Flags().IntP("parallel", "j", runtime.NumCPU(), "Number of concurrent jobs (default: number of CPUs)")
 
