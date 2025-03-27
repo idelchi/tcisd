@@ -48,6 +48,8 @@ func NewRootCommand(cfg *config.Config, version string) *cobra.Command {
 				cfg.Mode = config.LintMode
 			case "format":
 				cfg.Mode = config.FormatMode
+			default:
+				return cmd.Root().Help()
 			}
 
 			if cfg.Show {

@@ -52,5 +52,10 @@ func (c *Config) Validate() error {
 		return fmt.Errorf("%w: invalid number of parallel jobs: %d", ErrUsage, c.Parallel)
 	}
 
+	validModes := []Mode{"lint", "format"}
+	if !slices.Contains(validModes, c.Mode) {
+		return fmt.Errorf("%w: invalid mode: %s", ErrUsage, c.Mode)
+	}
+
 	return nil
 }
