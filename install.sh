@@ -3,7 +3,7 @@ set -e
 
 # Tool specific variables
 TOOL="tcisd"
-DISABLE_SSL="${ENVPROF_DISABLE_SSL:-false}"
+DISABLE_SSL="${TCISD_DISABLE_SSL:-false}"
 
 need_cmd() {
   if ! command -v "${1}" >/dev/null 2>&1; then
