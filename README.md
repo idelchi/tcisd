@@ -67,7 +67,7 @@ tcisd [flags] command [flags] [path ...]
 | Flag             | Description                                    | Default             |
 | ---------------- | ---------------------------------------------- | ------------------- |
 | `-t, --type`     | File types to process (go, python, dockerfile) | All supported types |
-| `-e, --exclude`  | Patterns to exclude                            | ['**/.git/**']      |
+| `-e, --exclude`  | Patterns to exclude                            | `['**/.git/**']`    |
 | `-a, --hidden`   | Include hidden files and directories           | `false`             |
 | `-j, --parallel` | Number of parallel workers to use              | Number of CPUs      |
 | `-h, --help`     | Help for the command                           | -                   |

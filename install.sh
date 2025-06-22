@@ -1,12 +1,23 @@
 #!/bin/sh
 set -e
 
-DISABLE_SSL=""
-for arg in "$@"; do
-  if [ "${arg}" = "-k" ]; then
-    DISABLE_SSL=yes
-    break
-  fi
-done
+# Tool specific variables
+TOOL="tcisd"
+DISABLE_SSL="${ENVPROF_DISABLE_SSL:-false}"
 
-curl ${DISABLE_SSL:+-k} -sSL https://raw.githubusercontent.com/idelchi/scripts/refs/heads/dev/install.sh | INSTALLER_TOOL="tcisd" sh -s -- "$@"
+need_cmd() {
+  if ! command -v "${1}" >/dev/null 2>&1; then
+    printf "Required command '${1}' not found"
+    exit 1
+  fi
+}
+
+main() {
+  # Check for required commands
+  need_cmd curl
+
+  # Call the installation script with the provided arguments
+  curl ${DISABLE_SSL:+-k} -sSL https://raw.githubusercontent.com/idelchi/scripts/refs/heads/dev/install.sh | INSTALLER_TOOL=${TOOL} sh -s -- "$@"
+}
+
+main "$@"
