@@ -7,8 +7,6 @@ on:
     branches:
       - dev
       - main
-    tags:
-      - "*"
 
 jobs:
   info:
@@ -24,23 +22,16 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.24.1"
+          go-version: "1.24.4"
           check-latest: true
 
       - name: Verify that project contains no comments
         run: go run . lint
 
-  cleanup:
-    uses: idelchi/devenv/.github/workflows/cleanup.yml@main
-    if: github.ref == 'refs/heads/dev'
-    needs: test
-    permissions:
-      actions: write
-
   next-tag:
     uses: idelchi/devenv/.github/workflows/next-tag.yml@main
     if: github.ref == 'refs/heads/dev'
-    needs: test
+    needs: info
 
   prerelease:
     uses: idelchi/devenv/.github/workflows/prerelease.yml@main
@@ -51,12 +42,4 @@ jobs:
       actions: write
     with:
       tag: ${{ needs.next-tag.outputs.next }}-beta
-
-  release:
-    uses: idelchi/devenv/.github/workflows/gorelease.yml@main
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: info
-    permissions:
-      contents: write
-    with:
-      config: .devenv/.goreleaser.yaml
+      workflow: release

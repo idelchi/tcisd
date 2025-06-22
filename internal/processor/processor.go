@@ -10,7 +10,6 @@ import (
 	"slices"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/fatih/color"
 	"github.com/natefinch/atomic"
@@ -21,10 +20,9 @@ import (
 )
 
 type Processor struct {
-	cfg            *config.Config
-	files          []string
-	results        map[string][]string
-	processingTime time.Duration
+	cfg     *config.Config
+	files   []string
+	results map[string][]string
 }
 
 func New(cfg *config.Config) *Processor {
@@ -51,10 +49,6 @@ func (p *Processor) Process() error {
 	if len(p.files) == 0 {
 		return errors.New("no files found")
 	}
-
-	log.Printf("Found %d files to process", len(p.files))
-
-	start := time.Now()
 
 	jobs := make(chan string, len(p.files))
 
@@ -85,8 +79,6 @@ func (p *Processor) Process() error {
 			p.results[result.file] = result.issues
 		}
 	}
-
-	p.processingTime = time.Since(start)
 
 	return nil
 }
@@ -136,8 +128,6 @@ func (p *Processor) worker(_ int, jobs <-chan string, results chan<- struct {
 }
 
 func (p *Processor) Summary() bool {
-	log.Printf("Processed %d files in %s", len(p.files), p.processingTime)
-
 	hasIssues := len(p.results) > 0
 
 	if hasIssues {
